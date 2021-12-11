@@ -1,9 +1,23 @@
 from django.db import models
 
+
+class Country(models.Model):
+    name = models.CharField(max_length=50)
+    iso_alpha_2 = models.CharField(max_length=50)
+
+
+class Gender(models.Model):
+    name = models.CharField(max_length=50)
+
+
 class User(models.Model):
-    sub = models.CharField(max_length=150, unique=True)
-    username = models.CharField(max_length=30)
-    full_name = models.CharField(max_length=70)
+    sub = models.CharField(max_length=120, unique=True)
+    is_admin = models.BooleanField(default=False)
+    nick_name = models.CharField(max_length=30)
+    full_name = models.CharField(max_length=60)
     email = models.CharField(max_length=60)
-    creation_date = models.DateField(auto_now_add=True)
-    profile_img = models.CharField(max_length=60, null=True)
+    profile_image = models.TextField(null=True)
+    strikes = models.IntegerField(default=0)
+    creation_at = models.DateField(auto_now_add=True)
+    country_id = models.ForeignKey(null=True, to=Country, on_delete=models.CASCADE)
+    gender_id = models.ForeignKey(null=True, to=Gender, on_delete=models.CASCADE)

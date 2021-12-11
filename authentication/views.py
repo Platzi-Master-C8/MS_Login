@@ -6,7 +6,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from authentication.models import User
 from django.http import JsonResponse
-from authentication.utils import formatting_user_response, get_user_data, update_user
+from authentication.utils import formatting_user_response, get_user_data, update_user, jwt_decode_token
+import pdb
 
 import jwt
 
@@ -42,41 +43,44 @@ def requires_scope(required_scope):
 
 
 @api_view(['GET'])
-def verify_user_token(request: HttpRequest):
+def verify_user_token():
     return JsonResponse({"status": "Authenticated"})
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def user(request: HttpRequest):
+    token = get_token_auth_header(request)
+    decode_token = jwt_decode_token(token)
+
     if request.method == 'GET':
-        user_data = get_user_data(request.GET)
-        user = User.objects.filter(sub=user_data["sub"]).first()
+        user = User.objects.filter(sub=decode_token["sub"]).first()
         if user:
             response = formatting_user_response(user=user)
             return HttpResponse(response, content_type='application/json')
 
     elif request.method == 'PUT':
         user_data = get_user_data(request.data)
-        update_user(user_data)
-        user = User.objects.filter(sub=user_data["sub"]).first()
+        update_user(user_data, decode_token["sub"])
+        user = User.objects.filter(sub=decode_token["sub"]).first()
         if user:
             response = formatting_user_response(user=user)
             return HttpResponse(response, content_type='application/json')
 
     elif request.method == 'DELETE':
-        user_data = get_user_data(request.GET)
-        User.objects.filter(sub=user_data["sub"]).delete()
+        User.objects.filter(sub=decode_token["sub"]).delete()
         return JsonResponse({"message": "deleted"})
-    response = HttpResponse()
+    response = JsonResponse()
     response.status_code = 404
     return response
 
 
 @api_view(['POST'])
 def sign_in(request: HttpRequest):
-    user_data = get_user_data(request.data)
-    if user_data["sub"]:
-        user = User.objects.filter(sub=user_data["sub"]).first()
+    token = get_token_auth_header(request)
+    decode_token = jwt_decode_token(token)
+
+    if decode_token["sub"]:
+        user = User.objects.filter(sub=decode_token["sub"]).first()
         if user:
             response = formatting_user_response(user=user)
             return HttpResponse(response, content_type='application/json')
@@ -87,9 +91,14 @@ def sign_in(request: HttpRequest):
 
 @api_view(['POST'])
 def sign_up(request: HttpRequest):
+    token = get_token_auth_header(request)
+    decode_token = jwt_decode_token(token)
     user_data = get_user_data(request.data)
-    if user_data["sub"] and user_data["email"] and user_data["username"] and user_data["full_name"]:
-        user = User(sub=user_data["sub"], username=user_data["username"], full_name=user_data["full_name"], email=user_data["email"], profile_img=user_data["profile_img"])
+
+    if decode_token["sub"] and user_data["email"] and user_data["nick_name"] and user_data["full_name"]:
+        user = User(
+            sub=decode_token["sub"], nick_name=user_data["nick_name"], full_name=user_data["full_name"], 
+            email=user_data["email"], profile_image=user_data["profile_image"], is_admin=user_data["is_admin"])
         user.save()
         user_response = formatting_user_response(user=user)
         response = HttpResponse(user_response, content_type='application/json')
