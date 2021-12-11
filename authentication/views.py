@@ -1,15 +1,13 @@
-from django.http.request import HttpRequest
 from django.http import HttpResponse
-from django.shortcuts import render
-from functools import wraps
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
-from authentication.models import User
 from django.http import JsonResponse
+from django.http.request import HttpRequest
+from authentication.models import User
 from authentication.utils import formatting_user_response, get_user_data, update_user, jwt_decode_token
-import pdb
+from rest_framework.decorators import api_view
+from functools import wraps
 
 import jwt
+
 
 def get_token_auth_header(request):
     """Obtains the Access Token from the Authorization Header
@@ -19,6 +17,7 @@ def get_token_auth_header(request):
     token = parts[1]
 
     return token
+
 
 def requires_scope(required_scope):
     """Determines if the required scope is present in the Access Token
@@ -43,7 +42,7 @@ def requires_scope(required_scope):
 
 
 @api_view(['GET'])
-def verify_user_token():
+def verify_user_token(request: HttpRequest):
     return JsonResponse({"status": "Authenticated"})
 
 
@@ -69,7 +68,7 @@ def user(request: HttpRequest):
     elif request.method == 'DELETE':
         User.objects.filter(sub=decode_token["sub"]).delete()
         return JsonResponse({"message": "deleted"})
-    response = JsonResponse()
+    response = JsonResponse({"message": "user not found"})
     response.status_code = 404
     return response
 

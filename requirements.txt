@@ -9,6 +9,7 @@ django-environ==0.8.1
 djangorestframework==3.12.4
 drf-jwt==1.13.4
 idna==2.8
+psycopg2-binary==2.9.2
 pycparser==2.21
 PyJWT==1.7.1
 pytz==2021.3

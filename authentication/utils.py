@@ -45,14 +45,15 @@ def get_user_data(data: dict) -> dict:
 
 def update_user(data: dict, sub: str):
     for_update = User.objects.filter(sub=sub)
-    if data["nick_name"]:
-        for_update.update(nick_name=data["nick_name"])
-    if data["full_name"]:
-        for_update.update(full_name=data["full_name"])
-    if data["email"]:
-        for_update.update(email=data["email"])
-    if data["profile_image"]:
-        for_update.update(profile_image=data["profile_image"])
+    if len(for_update) > 0:
+        if data["nick_name"]:
+            for_update.update(nick_name=data["nick_name"])
+        if data["full_name"]:
+            for_update.update(full_name=data["full_name"])
+        if data["email"]:
+            for_update.update(email=data["email"])
+        if data["profile_image"]:
+            for_update.update(profile_image=data["profile_image"])
 
 
 def formatting_user_response(user: User):
