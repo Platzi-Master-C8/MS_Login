@@ -3,11 +3,17 @@ from django.db import models
 
 class Country(models.Model):
     name = models.CharField(max_length=50)
-    iso_alpha_2 = models.CharField(max_length=50)
+    iso_alpha_2 = models.CharField(max_length=5)
+
+    class Meta:
+        db_table = "countries"
 
 
 class Gender(models.Model):
     name = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = "genders"
 
 
 class User(models.Model):
@@ -21,3 +27,6 @@ class User(models.Model):
     creation_at = models.DateField(auto_now_add=True)
     country_id = models.ForeignKey(null=True, to=Country, on_delete=models.CASCADE)
     gender_id = models.ForeignKey(null=True, to=Gender, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = "users"

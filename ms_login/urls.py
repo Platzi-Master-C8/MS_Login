@@ -23,4 +23,6 @@ urlpatterns = [
     path('auth/user', views.user, name='user'),
     path('auth/sign_in', views.sign_in, name='sign_in'),
     path('auth/sign_up', views.sign_up, name='sign_up'),
+    path('countries', views.country, name='country'),
+    path('genders', views.gender, name='gender'),
 ]

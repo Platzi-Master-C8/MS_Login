@@ -1,7 +1,8 @@
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.http.request import HttpRequest
-from authentication.models import User
+from django.forms.models import model_to_dict
+from authentication.models import User, Country, Gender
 from authentication.utils import formatting_user_response, get_user_data, update_user, jwt_decode_token
 from rest_framework.decorators import api_view
 from functools import wraps
@@ -105,4 +106,32 @@ def sign_up(request: HttpRequest):
         return response
     response = JsonResponse({'message': 'Sign up failed'})
     response.status_code = 400
+    return response
+
+
+@api_view(['GET'])
+def country(request: HttpRequest):
+    if request.method == 'GET':
+        countries = Country.objects.all()
+        if countries:
+            response = []
+            for i in countries:
+                response.append(model_to_dict(i))
+            return JsonResponse({"countries": response})
+    response = JsonResponse({"message": "countries not found"})
+    response.status_code = 404
+    return response
+
+
+@api_view(['GET'])
+def gender(request: HttpRequest):
+    if request.method == 'GET':
+        genders = Gender.objects.all()
+        if genders:
+            response = []
+            for i in genders:
+                response.append(model_to_dict(i))
+            return JsonResponse({"genders": genders})
+    response = JsonResponse({"message": "genders not found"})
+    response.status_code = 404
     return response
