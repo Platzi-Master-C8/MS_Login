@@ -96,14 +96,20 @@ def sign_up(request: HttpRequest):
     user_data = get_user_data(request.data)
 
     if decode_token["sub"] and user_data["email"] and user_data["nick_name"] and user_data["full_name"]:
-        user = User(
-            sub=decode_token["sub"], nick_name=user_data["nick_name"], full_name=user_data["full_name"], 
-            email=user_data["email"], profile_image=user_data["profile_image"], is_admin=user_data["is_admin"])
-        user.save()
-        user_response = formatting_user_response(user=user)
-        response = HttpResponse(user_response, content_type='application/json')
-        response.status_code = 201
-        return response
+        user = User.objects.filter(sub=decode_token["sub"]).first()
+        if not user:
+            user = User(
+                sub=decode_token["sub"], nick_name=user_data["nick_name"], full_name=user_data["full_name"], 
+                email=user_data["email"], profile_image=user_data["profile_image"], is_admin=user_data["is_admin"])
+            user.save()
+            user_response = formatting_user_response(user=user)
+            response = HttpResponse(user_response, content_type='application/json')
+            response.status_code = 201
+            return response
+        else:
+            response = JsonResponse({'message': 'The user already exist'})
+            response.status_code = 400
+            return response
     response = JsonResponse({'message': 'Sign up failed'})
     response.status_code = 400
     return response
