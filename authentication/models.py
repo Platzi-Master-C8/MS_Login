@@ -3,7 +3,7 @@ from django.db import models
 
 class Country(models.Model):
     name = models.CharField(max_length=50)
-    iso_alpha_2 = models.CharField(max_length=5)
+    iso = models.CharField(max_length=5)
 
     class Meta:
         db_table = "countries"
