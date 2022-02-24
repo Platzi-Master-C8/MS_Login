@@ -17,6 +17,7 @@ class Gender(models.Model):
 
 
 class User(models.Model):
+    id = models.AutoField(primary_key=True, unique=True,)
     sub = models.CharField(max_length=120, unique=True)
     is_admin = models.BooleanField(default=False)
     nick_name = models.CharField(max_length=30)
