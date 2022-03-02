@@ -50,7 +50,7 @@ def sign_in(request: HttpRequest):
         if user:
             response = formatting_user_response(user=user)
             return HttpResponse(response, content_type='application/json')
-        response = JsonResponse({'message': 'Sign in failed'})
+        response = JsonResponse({'message': 'The user do not exist'})
         response.status_code = 404
         return response
     except Exception as e:
@@ -76,7 +76,7 @@ def sign_up(request: HttpRequest):
             return response
         else:
             response = JsonResponse({'message': 'The user already exist'})
-            response.status_code = 400
+            response.status_code = 202
             return response
     except Exception as e:
         print(e)
